@@ -1,14 +1,11 @@
 variable "location" {
-  default = "East Us"
+
 }
 
 variable "resource_group_name" {
-  default = "terraform-nginx-rg"
+  default = "terraform-ACR"
 }
 
-variable "vm_name" {
-  default = "nginx-vm"
-}
 
 variable "admin_username" {
   default = "azureuser"
