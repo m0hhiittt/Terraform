@@ -57,8 +57,10 @@ resource "azurerm_container_app_environment" "main" {
   logs_destination           = "log-analytics"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
 
-  infrastructure_subnet_id       = azurerm_subnet.container_apps.id
-  internal_load_balancer_enabled = true
+  infrastructure_subnet_id = azurerm_subnet.container_apps.id
+  # A public UI/API needs an environment with a public inbound endpoint.
+  # Changing this forces replacement of the existing internal-only environment.
+  internal_load_balancer_enabled = false
 
   workload_profile {
     name                  = "Consumption"
@@ -123,8 +125,8 @@ resource "azurerm_container_app" "api" {
   }
 
   ingress {
-    external_enabled           = false
-    allow_insecure_connections = true
+    external_enabled           = true
+    allow_insecure_connections = false
     target_port                = 8080
     transport                  = "http"
 
@@ -137,7 +139,7 @@ resource "azurerm_container_app" "api" {
   template {
     container {
       name   = "api"
-      image  = "${azurerm_container_registry.acr.login_server}/transcribevideo-api:latest"
+      image  = "${azurerm_container_registry.acr.login_server}/transcribevideo-api:v2"
       cpu    = 0.5
       memory = "1Gi"
     }
@@ -163,8 +165,8 @@ resource "azurerm_container_app" "ui" {
   }
 
   ingress {
-    external_enabled           = false
-    allow_insecure_connections = true
+    external_enabled           = true
+    allow_insecure_connections = false
     target_port                = 80
     transport                  = "http"
 
